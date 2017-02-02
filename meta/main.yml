@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: "Berkay Ozuygur"
+  description: Ansible role for install ElasticSearch 5 and Kibana
+  license: GPLv2
+  min_ansible_version: 1.4
+  platforms:
+   - name: Ubuntu
+     versions:
+      - 14.04
+      - 16.04
+  categories:
+   - ElasticSearch
+   - Kibana
+  galaxy_tags:
+   - ElasticSearch
+   - Kibana
+dependencies: []
