@@ -1,0 +1,91 @@
+---
+- name: ES | Add Oracle Java Repo  
+  apt_repository:
+    repo: 'ppa:webupd8team/java'
+
+- name: Autoaccept license for Java
+  action: shell echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+
+- name: ES | Install Oracle Java 1.8
+  apt:
+    name: oracle-java8-installer 
+    state: present
+    update_cache: yes
+
+- name: ES | Download Elastic {{ ES_VERSION }} Deb File
+  get_url:
+    url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ ES_VERSION }}.deb
+    dest: /usr/local/src/
+
+- name: ES | Install ElasticSearch {{ ES_VERSION }}
+  apt:
+    deb: /usr/local/src/elasticsearch-{{ ES_VERSION }}.deb
+
+- name: ES | Download Kibana {{ KIBANA_VERSION }}
+  get_url:
+    url: https://artifacts.elastic.co/downloads/kibana/kibana-{{ KIBANA_VERSION }}-amd64.deb
+    dest: /usr/local/src/
+
+- name: ES | Install Kibana {{ KIBANA_VERSION }}
+  apt:
+    deb: /usr/local/src/kibana-{{ KIBANA_VERSION }}-amd64.deb
+
+- name: ES | Sysctl Conf
+  blockinfile:
+    dest: /etc/sysctl.conf
+    block: |
+      vm.swappiness=1              # turn off swapping
+      net.core.somaxconn=65535     # up the number of connections per port
+      vm.max_map_count=262144      #(default) 
+      fs.file-max=518144
+
+- name: ES | Security limits Conf
+  blockinfile:
+    dest: /etc/security/limits.conf
+    block: |
+      elasticsearch    -      nofile  65535
+      elasticsearch    -      memlock  unlimited
+
+- name: ES | Default Elasticsearch Conf
+  blockinfile:
+    dest: /etc/default/elasticsearch
+    block: |
+      MAX_LOCKED_MEMORY=unlimited
+
+- name: ES | Systemd Elasticsearch.Service
+  lineinfile:
+    path: /usr/lib/systemd/system/elasticsearch.service
+    insertafter: '^LimitNOFILE=65536'
+    line: LimitMEMLOCK=infinity
+
+- name: ES | SystemD Reload
+  become: True
+  shell: systemctl daemon-reload
+
+- name: ES | ES Config Update
+  template:
+    src: elasticsearch.yml.j2
+    dest: /etc/elasticsearch/elasticsearch.yml
+
+- name: ES | ES JVM Config Update
+  template:
+    src: jvm.options.j2
+    dest: /etc/elasticsearch/jvm.options
+
+- name: ES | Kibana Config Update
+  template:
+    src: kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+
+- name: ES | Add ElasticSerach Service to startup and start service
+  service: 
+    name: elasticsearch 
+    enabled: yes 
+    state: restarted 
+
+- name: ES | Add Kibana Service to Startup and Start Service
+  service:
+    name: kibana
+    enabled: yes
+    state: restarted
+

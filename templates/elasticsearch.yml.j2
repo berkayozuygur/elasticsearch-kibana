@@ -1,0 +1,25 @@
+################################### Cluster ###################################
+cluster.name: {{ CLUSTER_NAME }} 
+
+#################################### Node #####################################
+node.name: "{{ ansible_hostname }}"
+
+################################### Memory ####################################
+bootstrap.memory_lock: true
+
+############################## Network And HTTP ###############################
+network.host: 0.0.0.0
+http.compression: true
+http.compression_level : 3
+
+############################## discovery.zen.ping.unicast.hosts: ["host1", "host2:port"]
+{% if ES_CLUSTER == "true" %}
+discovery.zen.ping.unicast.hosts: ["{{ NODE1_IP }}", "{{ NODE2_IP }}", "{{ NODE3_IP }}"]
+discovery.zen.minimum_master_nodes: 2
+{% endif %}
+# ---------------------------------- Various -----------------------------------
+
+action.auto_create_index: false
+action.destructive_requires_name: true
+indices.fielddata.cache.size: 30%
+indices.queries.cache.size: 30%
