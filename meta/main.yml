@@ -10,7 +10,7 @@ galaxy_info:
       - trusty
       - utopic
       - vivid
-      - Xenial
+      - xenial
   categories:
    - ElasticSearch
    - Kibana
