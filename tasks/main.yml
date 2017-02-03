@@ -55,8 +55,9 @@
 - name: ES | Systemd Elasticsearch.Service
   lineinfile:
     path: /usr/lib/systemd/system/elasticsearch.service
-    insertafter: '^LimitNOFILE=65536'
-    line: LimitMEMLOCK=infinity
+    regexp: '^LimitMEMLOCK=infinity '
+    insertafter: '^#LimitMEMLOCK=infinity '
+    line: 'LimitMEMLOCK=infinity'
 
 - name: ES | SystemD Reload
   become: True
