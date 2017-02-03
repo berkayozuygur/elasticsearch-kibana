@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: "Berkay Ozuygur"
-  description: Ansible role for install ElasticSearch 5 and Kibana
+  description: Ansible role for install ElasticSearch&Kibana 5 with linux kernel parameters.
   license: GPLv2
   min_ansible_version: 1.4
   platforms:
